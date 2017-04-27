@@ -4,6 +4,7 @@
 #include "crpropa/Referenced.h"
 #include "crpropa/Vector3.h"
 #include <vector>
+#include <typeinfo>
 
 namespace crpropa {
 
@@ -165,9 +166,110 @@ public:
 		return get(ix, iy, iz);
 	}
 
-	/** Interpolate the grid at a given position */
-	T interpolate(const Vector3d &position) const {
-		// position on a unit grid
+//Zweiter Versuch, diesmal nur für Vektorfelder:
+//----------------------------------------------
+
+/** Interpolate Vectorfield */
+	Vector3d interpolatevf(const Vector3d &position) const {
+		//position on a unit grid
+		Vector3d r = (position - gridOrigin) / spacing;
+		
+// indices of lower and upper neighbors
+		int ix, iX, iy, iY, iz, iZ;
+		if (reflective) {
+			reflectiveClamp(r.x, Nx, ix, iX);
+			reflectiveClamp(r.y, Ny, iy, iY);
+			reflectiveClamp(r.z, Nz, iz, iZ);
+		} else {
+			periodicClamp(r.x, Nx, ix, iX);
+			periodicClamp(r.y, Ny, iy, iY);
+			periodicClamp(r.z, Nz, iz, iZ);
+		}
+
+		// linear fraction to lower and upper neighbors
+		double fx = r.x - floor(r.x);
+		double fX = 1 - fx;
+		double fy = r.y - floor(r.y);
+		double fY = 1 - fy;
+		double fz = r.z - floor(r.z);
+		double fZ = 1 - fz;
+
+		// trilinear interpolation (see http://paulbourke.net/miscellaneous/interpolation)
+		//T b(0.);
+		
+		//~ T v000();
+		//~ T v100();
+		//~ T v010();
+		//~ T v001();
+		//~ T v101();
+		//~ T v011();
+		//~ T v110();
+		//~ T v111();
+
+		Vector3d v000 = Vector3d(0,0,0);
+		Vector3d v100 = Vector3d(0,0,0);
+		Vector3d v010 = Vector3d(0,0,0);
+		Vector3d v001 = Vector3d(0,0,0);
+		Vector3d v101 = Vector3d(0,0,0);
+		Vector3d v011 = Vector3d(0,0,0);
+		Vector3d v110 = Vector3d(0,0,0);
+		Vector3d v111 = Vector3d(0,0,0);
+		//~ 
+		//~ Vector3d v = Vector3d(0,0,0);
+		Vector3d v = Vector3d(0,0,0);
+		
+		//~ 
+		//~ double laenge = v000.getR()*fX*fY*fZ;
+		//~ 
+		//double laenge = get(ix,iy,iz).getR();
+		//~ T test = get(ix,iy,iz);
+		//~ 
+		//double testd = Vector3d(ix,iy,iz).getR();
+		//~ 
+		//~ if (typeof(get(ix,iy,iz)) == Vector3)
+		//~ {
+			//~ double laenge = get(ix,iy,iz).getR();
+		//~ }
+		
+		
+		if (typeid(get(ix,iy,iz)) == typeid(v000))
+		{
+			v000 = get(ix,iy,iz);
+			v100 = get(iX,iy,iz);
+			v010 = get(ix,iY,iz);
+			v001 = get(ix,iy,iZ);
+			v101 = get(iX,iy,iZ);
+			v011 = get(ix,iY,iZ);
+			v110 = get(iX,iY,iz);
+			v111 = get(iX,iY,iZ);
+			
+			double laenge = v000.getR() * fX*fY*fZ + v100.getR() * fx*fY*fZ + v010.getR() * fX*fy*fZ + v001.getR() * fX*fY*fz +v101.getR() *fx*fY*fz + v011.getR() *fX*fy*fz + v110.getR() *fx*fy*fZ + v111.getR() *fx*fy*fz;
+			
+			double z = v000.getZ() * fX*fY*fZ + v100.getZ() * fx*fY*fZ + v010.getZ() * fX*fy*fZ + v001.getZ() * fX*fY*fz +v101.getZ() *fx*fY*fz + v011.getZ() *fX*fy*fz + v110.getZ() *fx*fy*fZ + v111.getZ() *fx*fy*fz;
+			double theta = acos(z/laenge);
+			
+			double x = v000.getX() * fX*fY*fZ + v100.getX() * fx*fY*fZ + v010.getX() * fX*fy*fZ + v001.getX() * fX*fY*fz +v101.getX() *fx*fY*fz + v011.getX() *fX*fy*fz + v110.getX() *fx*fy*fZ + v111.getX() *fx*fy*fz;
+			double y = v000.getR() * fX*fY*fZ + v100.getY() * fx*fY*fZ + v010.getY() * fX*fy*fZ + v001.getY() * fX*fY*fz +v101.getY() *fx*fY*fz + v011.getY() *fX*fy*fz + v110.getY() *fx*fy*fZ + v111.getY() *fx*fy*fz;
+			double phi = atan2(y,x);
+			
+			v.setRThetaPhi(laenge,theta,phi);
+		}
+		return v;
+	}
+		
+
+	//ERSTER VERSUCH, beides in einer Funktion:
+//-----------------------------------------
+
+T interpolate(const Vector3d &position) {
+interpolate(T(),position);
+}
+
+private:
+
+T interpolate(T,const Vector3d &position) { //SKALAR
+
+// position on a unit grid
 		Vector3d r = (position - gridOrigin) / spacing;
 
 		// indices of lower and upper neighbors
@@ -211,7 +313,156 @@ public:
 
 		return b;
 	}
+
+Vector3d interpolate(Vector3d, const Vector3d &position) {
+		//position on a unit grid
+		Vector3d r = (position - gridOrigin) / spacing;
+		
+// indices of lower and upper neighbors
+		int ix, iX, iy, iY, iz, iZ;
+		if (reflective) {
+			reflectiveClamp(r.x, Nx, ix, iX);
+			reflectiveClamp(r.y, Ny, iy, iY);
+			reflectiveClamp(r.z, Nz, iz, iZ);
+		} else {
+			periodicClamp(r.x, Nx, ix, iX);
+			periodicClamp(r.y, Ny, iy, iY);
+			periodicClamp(r.z, Nz, iz, iZ);
+		}
+
+		// linear fraction to lower and upper neighbors
+		double fx = r.x - floor(r.x);
+		double fX = 1 - fx;
+		double fy = r.y - floor(r.y);
+		double fY = 1 - fy;
+		double fz = r.z - floor(r.z);
+		double fZ = 1 - fz;
+
+		// trilinear interpolation (see http://paulbourke.net/miscellaneous/interpolation)
+		//T b(0.);
+		
+		//~ T v000();
+		//~ T v100();
+		//~ T v010();
+		//~ T v001();
+		//~ T v101();
+		//~ T v011();
+		//~ T v110();
+		//~ T v111();
+
+		Vector3d v000 = Vector3d(0,0,0);
+		Vector3d v100 = Vector3d(0,0,0);
+		Vector3d v010 = Vector3d(0,0,0);
+		Vector3d v001 = Vector3d(0,0,0);
+		Vector3d v101 = Vector3d(0,0,0);
+		Vector3d v011 = Vector3d(0,0,0);
+		Vector3d v110 = Vector3d(0,0,0);
+		Vector3d v111 = Vector3d(0,0,0);
+		//~ 
+		//~ Vector3d v = Vector3d(0,0,0);
+		Vector3d v = Vector3d(0,0,0);
+		
+		//~ 
+		//~ double laenge = v000.getR()*fX*fY*fZ;
+		//~ 
+		//double laenge = get(ix,iy,iz).getR();
+		//~ T test = get(ix,iy,iz);
+		//~ 
+		//double testd = Vector3d(ix,iy,iz).getR();
+		//~ 
+		//~ if (typeof(get(ix,iy,iz)) == Vector3)
+		//~ {
+			//~ double laenge = get(ix,iy,iz).getR();
+		//~ }
+		
+		
+		if (typeid(get(ix,iy,iz)) == typeid(v000))
+		{
+			v000 = get(ix,iy,iz);
+			v100 = get(iX,iy,iz);
+			v010 = get(ix,iY,iz);
+			v001 = get(ix,iy,iZ);
+			v101 = get(iX,iy,iZ);
+			v011 = get(ix,iY,iZ);
+			v110 = get(iX,iY,iz);
+			v111 = get(iX,iY,iZ);
+			
+			double laenge = v000.getR() * fX*fY*fZ + v100.getR() * fx*fY*fZ + v010.getR() * fX*fy*fZ + v001.getR() * fX*fY*fz +v101.getR() *fx*fY*fz + v011.getR() *fX*fy*fz + v110.getR() *fx*fy*fZ + v111.getR() *fx*fy*fz;
+			
+			double z = v000.getZ() * fX*fY*fZ + v100.getZ() * fx*fY*fZ + v010.getZ() * fX*fy*fZ + v001.getZ() * fX*fY*fz +v101.getZ() *fx*fY*fz + v011.getZ() *fX*fy*fz + v110.getZ() *fx*fy*fZ + v111.getZ() *fx*fy*fz;
+			double theta = acos(z/laenge);
+			
+			double x = v000.getX() * fX*fY*fZ + v100.getX() * fx*fY*fZ + v010.getX() * fX*fy*fZ + v001.getX() * fX*fY*fz +v101.getX() *fx*fY*fz + v011.getX() *fX*fy*fz + v110.getX() *fx*fy*fZ + v111.getX() *fx*fy*fz;
+			double y = v000.getR() * fX*fY*fZ + v100.getY() * fx*fY*fZ + v010.getY() * fX*fy*fZ + v001.getY() * fX*fY*fz +v101.getY() *fx*fY*fz + v011.getY() *fX*fy*fz + v110.getY() *fx*fy*fZ + v111.getY() *fx*fy*fz;
+			double phi = atan2(y,x);
+			
+			v.setRThetaPhi(laenge,theta,phi);
+		}
+		return v;
+
+   }	
+
 };
+
+//~ 
+//~ template <typename T>
+//~ Vector3d interpolate (const Vector3d &position)  {
+	//~ 
+	//~ 
+	//~ 
+	//~ Vector3d v = Vector3d(0,0,0);
+	//~ return v;
+//~ }
+
+
+
+	//~ /** Interpolate the grid at a given position */
+	//~ T interpolate(const Vector3d &position) const {
+		//~ // position on a unit grid
+		//~ Vector3d r = (position - gridOrigin) / spacing;
+//~ 
+		//~ // indices of lower and upper neighbors
+		//~ int ix, iX, iy, iY, iz, iZ;
+		//~ if (reflective) {
+			//~ reflectiveClamp(r.x, Nx, ix, iX);
+			//~ reflectiveClamp(r.y, Ny, iy, iY);
+			//~ reflectiveClamp(r.z, Nz, iz, iZ);
+		//~ } else {
+			//~ periodicClamp(r.x, Nx, ix, iX);
+			//~ periodicClamp(r.y, Ny, iy, iY);
+			//~ periodicClamp(r.z, Nz, iz, iZ);
+		//~ }
+//~ 
+		//~ // linear fraction to lower and upper neighbors
+		//~ double fx = r.x - floor(r.x);
+		//~ double fX = 1 - fx;
+		//~ double fy = r.y - floor(r.y);
+		//~ double fY = 1 - fy;
+		//~ double fz = r.z - floor(r.z);
+		//~ double fZ = 1 - fz;
+//~ 
+		//~ // trilinear interpolation (see http://paulbourke.net/miscellaneous/interpolation)
+		//~ T b(0.);
+		//~ //V000 (1 - x) (1 - y) (1 - z) +
+		//~ b += get(ix, iy, iz) * fX * fY * fZ;
+		//~ //V100 x (1 - y) (1 - z) +
+		//~ b += get(iX, iy, iz) * fx * fY * fZ;
+		//~ //V010 (1 - x) y (1 - z) +
+		//~ b += get(ix, iY, iz) * fX * fy * fZ;
+		//~ //V001 (1 - x) (1 - y) z +
+		//~ b += get(ix, iy, iZ) * fX * fY * fz;
+		//~ //V101 x (1 - y) z +
+		//~ b += get(iX, iy, iZ) * fx * fY * fz;
+		//~ //V011 (1 - x) y z +
+		//~ b += get(ix, iY, iZ) * fX * fy * fz;
+		//~ //V110 x y (1 - z) +
+		//~ b += get(iX, iY, iz) * fx * fy * fZ;
+		//~ //V111 x y z
+		//~ b += get(iX, iY, iZ) * fx * fy * fz;
+//~ 
+		//~ return b;
+	//~ }
+//~ };
 
 typedef Grid<Vector3f> VectorGrid;
 typedef Grid<float> ScalarGrid;

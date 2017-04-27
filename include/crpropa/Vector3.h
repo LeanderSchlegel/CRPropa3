@@ -77,6 +77,12 @@ public:
 		y = r * sin(theta) * sin(phi);
 		z = r * cos(theta);
 	}
+	
+	//~ void setRThetaPhi(const double r, const double theta, const double phi) {
+		//~ x = r * sin(theta) * cos(phi);
+		//~ y = r * sin(theta) * sin(phi);
+		//~ z = r * cos(theta);
+	//~ }
 
 	T getX() const {
 		return x;
