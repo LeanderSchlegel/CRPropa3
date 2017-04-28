@@ -5,6 +5,7 @@
 #include "crpropa/Vector3.h"
 #include <vector>
 #include <typeinfo>
+//#include <fstream>
 
 namespace crpropa {
 
@@ -262,13 +263,14 @@ public:
 //-----------------------------------------
 
 T interpolate(const Vector3d &position) {
-interpolate(T(),position);
+return interpolate(T(),position);
 }
 
 private:
 
-T interpolate(T,const Vector3d &position) { //SKALAR
-
+/*T interpolate(T,const Vector3d &position) { //Generisch testweise als dritte Funktion drin
+std::cout << "T interpolate(T,const Vector3d &position) { GENERISCH" << std::endl;
+//~ std::cout << flush();
 // position on a unit grid
 		Vector3d r = (position - gridOrigin) / spacing;
 
@@ -312,12 +314,17 @@ T interpolate(T,const Vector3d &position) { //SKALAR
 		b += get(iX, iY, iZ) * fx * fy * fz;
 
 		return b;
-	}
+	}*/
 
 Vector3d interpolate(Vector3d, const Vector3d &position) {
 		//position on a unit grid
 		Vector3d r = (position - gridOrigin) / spacing;
 		
+		std::cout << "Vector3d interpolate(Vector3d,const Vector3d &position) { //VEKTOR "<< std::endl;
+		//FILE * myfile("testlog.txt","a");
+		//myfile << "Vector3d interpolate(Vector3d,const Vector3d &position) { //VEKTOR "<< std::endl;
+		
+		//~ std::cout << flush();
 // indices of lower and upper neighbors
 		int ix, iX, iy, iY, iz, iZ;
 		if (reflective) {
@@ -400,7 +407,55 @@ Vector3d interpolate(Vector3d, const Vector3d &position) {
 		}
 		return v;
 
-   }	
+   }
+
+double interpolate(double,const Vector3d &position) { //SKALAR
+std::cout << "T interpolate(T,const Vector3d &position) { //SKALAR" << std::endl;
+//~ std::cout << flush();
+// position on a unit grid
+		Vector3d r = (position - gridOrigin) / spacing;
+
+		// indices of lower and upper neighbors
+		int ix, iX, iy, iY, iz, iZ;
+		if (reflective) {
+			reflectiveClamp(r.x, Nx, ix, iX);
+			reflectiveClamp(r.y, Ny, iy, iY);
+			reflectiveClamp(r.z, Nz, iz, iZ);
+		} else {
+			periodicClamp(r.x, Nx, ix, iX);
+			periodicClamp(r.y, Ny, iy, iY);
+			periodicClamp(r.z, Nz, iz, iZ);
+		}
+
+		// linear fraction to lower and upper neighbors
+		double fx = r.x - floor(r.x);
+		double fX = 1 - fx;
+		double fy = r.y - floor(r.y);
+		double fY = 1 - fy;
+		double fz = r.z - floor(r.z);
+		double fZ = 1 - fz;
+
+		// trilinear interpolation (see http://paulbourke.net/miscellaneous/interpolation)
+		T b(0.);
+		//V000 (1 - x) (1 - y) (1 - z) +
+		b += get(ix, iy, iz) * fX * fY * fZ;
+		//V100 x (1 - y) (1 - z) +
+		b += get(iX, iy, iz) * fx * fY * fZ;
+		//V010 (1 - x) y (1 - z) +
+		b += get(ix, iY, iz) * fX * fy * fZ;
+		//V001 (1 - x) (1 - y) z +
+		b += get(ix, iy, iZ) * fX * fY * fz;
+		//V101 x (1 - y) z +
+		b += get(iX, iy, iZ) * fx * fY * fz;
+		//V011 (1 - x) y z +
+		b += get(ix, iY, iZ) * fX * fy * fz;
+		//V110 x y (1 - z) +
+		b += get(iX, iY, iz) * fx * fy * fZ;
+		//V111 x y z
+		b += get(iX, iY, iZ) * fx * fy * fz;
+
+		return b;
+	}
 
 };
 
