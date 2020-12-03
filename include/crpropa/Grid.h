@@ -347,20 +347,20 @@ __m128 simd_periodicGet(size_t ix, size_t iy, size_t iz) const {
 		ix = periodicBoundary(ix, Nx);
 		iy = periodicBoundary(iy, Ny);
 		iz = periodicBoundary(iz, Nz);
-		return convert_Vector3d_to_simd(grid[ix * Ny * Nz + iy * Nz + iz]);
+		return convert_Vector3f_to_simd(grid[ix * Ny * Nz + iy * Nz + iz]);
 	}
 
-__m128 convert_Vector3d_to_simd(const Vector3d v) const
+__m128 convert_Vector3f_to_simd(const Vector3f v) const
 	{
 		__m128 sim_d_var = _mm_set_ps(0,v.z,v.y,v.x); 
 		return sim_d_var;
 	}
 	
-Vector3d convert_simd_to_Vector3d(__m128 res) const
+Vector3d convert_simd_to_Vector3f(__m128 res) const
 	{
 		float vec[4];	
 		_mm_store_ps(&vec[0], res);
-		Vector3d result = Vector3d(vec[0], vec[1], vec[2]);
+		Vector3f result = Vector3d(vec[0], vec[1], vec[2]);
 		return result;
 	}
 
@@ -392,7 +392,7 @@ __m128 CubicInterpolate(__m128 p0,__m128 p1,__m128 p2,__m128 p3,double position)
 }	
 
 /** Interpolate the grid tricubic at a given position */
-	Vector3d tricubic_interpolate(Vector3d, const Vector3d &position) const {
+	Vector3d tricubic_interpolate(Vector3f, const Vector3d &position) const {
 		// position on a unit grid
 		//~ std::cout << "Test begin"<< std::endl;
 		Vector3d r = (position - gridOrigin) / spacing;
@@ -436,7 +436,7 @@ CubicInterpolate(CubicInterpolate(CubicInterpolate(simd_periodicGet(ix-1,iy-1,iz
                                   posy),
                  posx);
 	
-		return convert_simd_to_Vector3d(result);
+		return convert_simd_to_Vector3f(result);
 	}
 
 
