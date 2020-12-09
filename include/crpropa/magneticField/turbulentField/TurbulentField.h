@@ -75,9 +75,7 @@ class TurbulenceSpectrum : public Referenced {
 	with normalized ^k = k*lBendover
 	*/
 	virtual double energySpectrum(double kHat) const {
-		return std::pow(kHat, qIndex) /
-				       std::pow(1.0 + kHat * kHat,
-			                (sIndex + qIndex) / 2.0 + 1.0);
+		return std::pow(kHat, -sIndex);
 	}
 
 	/**
