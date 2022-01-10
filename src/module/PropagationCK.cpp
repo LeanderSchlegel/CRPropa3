@@ -115,6 +115,11 @@ void PropagationCK::process(Candidate *candidate) const {
 	current.setDirection(yOut.u.getUnitVector());
 	candidate->setCurrentStep(step);
 	candidate->setNextStep(newStep);
+	
+	//set BField property
+	Vector3d BField(0,0,0);
+	BField = field->getField(yOut.x);
+	candidate->setBField(BField);
 }
 
 void PropagationCK::setField(ref_ptr<MagneticField> f) {

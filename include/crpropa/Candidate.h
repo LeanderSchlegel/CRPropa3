@@ -46,6 +46,7 @@ private:
 	double trajectoryLength; /**< Comoving distance [m] the candidate has traveled so far */
 	double currentStep; /**< Size of the currently performed step in [m] comoving units */
 	double nextStep; /**< Proposed size of the next propagation step in [m] comoving units */
+	Vector3d BField = Vector3d(0, 0, 0); /**< B field at current position */
 
 	static uint64_t nextSerialNumber;
 	uint64_t serialNumber;
@@ -95,6 +96,13 @@ public:
 	 */
 	void setNextStep(double step);
 	double getNextStep() const;
+	
+	/**
+	 Sets the current BField vector.
+	 Only the propagation module should use this.
+	 */
+	void setBField(Vector3d B);
+	Vector3d getBField() const;
 
 	/**
 	 Make a bid for the next step size: the lowest wins.

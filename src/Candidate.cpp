@@ -7,7 +7,7 @@
 namespace crpropa {
 
 Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, double weight) :
-		redshift(z), trajectoryLength(0), weight(1), currentStep(0), nextStep(0), active(true), parent(0) {
+		redshift(z), trajectoryLength(0), weight(1), currentStep(0), nextStep(0), active(true), parent(0), BField(0.) {
 	ParticleState state(id, E, pos, dir);
 	source = state;
 	created = state;
@@ -96,6 +96,14 @@ void Candidate::limitNextStep(double step) {
 
 void Candidate::setProperty(const std::string &name, const Variant &value) {
 	properties[name] = value;
+}
+
+Vector3d Candidate::getBField() const {
+		return BField;
+}
+
+void Candidate::setBField(Vector3d B) {
+	BField = B;
 }
 
 const Variant &Candidate::getProperty(const std::string &name) const {

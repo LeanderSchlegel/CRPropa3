@@ -4,6 +4,8 @@
 #include "crpropa/Version.h"
 #include "crpropa/Random.h"
 #include "crpropa/base64.h"
+#include "crpropa/Vector3.h"
+#include <vector>
 
 #include "kiss/string.h"
 
@@ -68,6 +70,7 @@ void TextOutput::printHeader() const {
 		*out << "\tX\tY\tZ";
 	if (fields.test(CurrentDirectionColumn) && not oneDimensional)
 		*out << "\tPx\tPy\tPz";
+	*out << "\tBx\tBy\tBz";	//Unconditioned B field output
 	if (fields.test(SerialNumberColumn))
 		*out << "\tSN0";
 	if (fields.test(SourceIdColumn))
@@ -121,6 +124,7 @@ void TextOutput::printHeader() const {
 			|| fields.test(CreatedDirectionColumn)
 			|| fields.test(SourceDirectionColumn))
 		*out << "# Px/P0x/P1x... Heading (unit vector of momentum)\n";
+	*out << "# Bx/By/Bz... Magnetic field (at current position)\n"; //Unconditioned B field output
 	if (fields.test(WeightColumn))
 		*out << "# W             Weights" << " \n";
 	for(std::vector<Property>::const_iterator iter = properties.begin();
@@ -188,6 +192,12 @@ void TextOutput::process(Candidate *c) const {
 					pos.z);
 		}
 	}
+	
+	//Unconditioned B field output
+	Vector3d B = Vector3d(0,0,0);
+	const Vector3d BField = c->getBField();
+	p += std::sprintf(buffer + p, "%8.5E\t%8.5E\t%8.5E\t", BField.x, BField.y,
+			BField.z);
 
 	if (fields.test(SerialNumberColumn))
 		p += std::sprintf(buffer + p, "%10lu\t", c->getSourceSerialNumber());
