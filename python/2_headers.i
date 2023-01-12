@@ -465,6 +465,7 @@ using namespace crpropa;   // for usage of namespace in header files, necessary
 %feature("director") crpropa::Observer;
 %feature("director") crpropa::ObserverFeature;
 %include "crpropa/module/Observer.h"
+%include "crpropa/module/SearchMagMirror.h"
 %include "crpropa/module/SimplePropagation.h"
 %include "crpropa/module/PropagationCK.h"
 %include "crpropa/module/PropagationBP.h"

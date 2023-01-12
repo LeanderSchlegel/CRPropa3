@@ -39,6 +39,9 @@ public:
 	/** Parent candidate. 0 if no parent (initial particle). Must not be a ref_ptr to prevent circular referencing. */
 	Candidate *parent;
 
+	std::vector<double> lastPositions;	// for mirror module
+	double lastParallelMomentum = 0; 	// for mirror module
+
 private:
 	bool active; /**< Active status */
 	double weight; /**< Weight of the candidate */
