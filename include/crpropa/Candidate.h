@@ -50,6 +50,7 @@ private:
 	double currentStep; /**< Size of the currently performed step in [m] comoving units */
 	double nextStep; /**< Proposed size of the next propagation step in [m] comoving units */
 	Vector3d BField = Vector3d(0, 0, 0); /**< B field at current position */
+	std::string tagOrigin; /**< Name of interaction/source process which created this candidate*/
 
 	static uint64_t nextSerialNumber;
 	uint64_t serialNumber;
@@ -61,7 +62,8 @@ public:
 		Vector3d position = Vector3d(0, 0, 0),
 		Vector3d direction = Vector3d(-1, 0, 0),
 		double z = 0,
-		double weight = 1
+		double weight = 1., 
+		std::string tagOrigin = "PRIM"
 	);
 
 	/**
@@ -84,6 +86,7 @@ public:
 	 Weights are calculated for each tracked secondary.
 	 */
 	void setWeight(double weight);
+    void updateWeight(double weight);
 	double getWeight() const;
 
 	/**
@@ -108,6 +111,12 @@ public:
 	Vector3d getBField() const;
 
 	/**
+	 Sets the tagOrigin of the candidate. Can be used to trace back the interactions
+	 */
+	void setTagOrigin(std::string tagOrigin);
+	std::string getTagOrigin() const;
+
+	/**
 	 Make a bid for the next step size: the lowest wins.
 	 */
 	void limitNextStep(double step);
@@ -129,8 +138,8 @@ public:
 	 */
 	void addSecondary(Candidate *c);
 	inline void addSecondary(ref_ptr<Candidate> c) { addSecondary(c.get()); };
-	void addSecondary(int id, double energy, double weight = 1);
-	void addSecondary(int id, double energy, Vector3d position, double weight = 1);
+	void addSecondary(int id, double energy, double w = 1., std::string tagOrigin = "SEC");
+	void addSecondary(int id, double energy, Vector3d position, double w = 1., std::string tagOrigin = "SEC");
 	void clearSecondaries();
 
 	std::string getDescription() const;

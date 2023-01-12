@@ -8,7 +8,7 @@ else(APPLE)
 endif(APPLE)
 
 project(CRPropa Fortran C CXX)
-set(CRPROPA_RELEASE_VERSION >3.1.7)  # Update for new release
+set(CRPROPA_RELEASE_VERSION 3.2+)  # Update for new release
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -336,7 +336,7 @@ endif(APPLE)
 # Download data files (interaction data, masses, decay data ...)
 # ----------------------------------------------------------------------------
 OPTION(DOWNLOAD_DATA "Download CRPropa data files" ON)
-set(CRPROPA_DATAFILE_VER "2021-11-29")
+set(CRPROPA_DATAFILE_VER "2022-07-06")
 if(DOWNLOAD_DATA)
   message("-- Downloading data file from crpropa.desy.de ~ 65 MB")
   file(DOWNLOAD
