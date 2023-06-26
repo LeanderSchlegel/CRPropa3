@@ -39,8 +39,8 @@ public:
 	/** Parent candidate. 0 if no parent (initial particle). Must not be a ref_ptr to prevent circular referencing. */
 	Candidate *parent;
 
-	std::vector<double> lastPositions;	// for mirror module
-	double lastParallelMomentum = 0; 	// for mirror module
+	std::vector<double> lastMagneticField;	// for mirror module
+	std::vector<double> lastPitchAngle; // here: cos(theta) for mirror module
 
 private:
 	bool active; /**< Active status */

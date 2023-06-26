@@ -19,13 +19,12 @@ class SearchMagMirror: public Module {
 private:
 	double tolerance; 
 	int timescale;
-	bool isMaxTimescale;
-	ref_ptr<Module> TxtOut; 
+	Module *TxtOut; 
 
 public:
-	SearchMagMirror(double tolerance = (0.0), int timescale = (0), bool isMaxTimescale = true);
+	SearchMagMirror(double tolerance = (0.0), int timescale = (0));
 	void process(Candidate *c) const;
-	void addOutput(ref_ptr<Module> TxtOut);
+	void addOutput(Module *TxtOut);
 };
 
 } // namespace crpropa
