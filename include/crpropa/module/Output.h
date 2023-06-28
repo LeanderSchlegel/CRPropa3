@@ -82,13 +82,17 @@ public:
 		SourceEnergyColumn,
 		SourcePositionColumn,
 		SourceDirectionColumn,
+		SourceSerialNumberColumn,
 		CreatedIdColumn,
 		CreatedEnergyColumn,
 		CreatedPositionColumn,
 		CreatedDirectionColumn,
+		CreatedSerialNumberColumn,
 		CandidateTagColumn,
 		SerialNumberColumn,
-		WeightColumn
+		WeightColumn, 
+		MagneticFieldColumn, 
+		PitchangleColumn
 	};
 	enum OutputType {
 		Trajectory1D,

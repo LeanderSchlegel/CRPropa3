@@ -70,8 +70,9 @@ void TextOutput::printHeader() const {
 		*out << "\tX\tY\tZ";
 	if (fields.test(CurrentDirectionColumn) && not oneDimensional)
 		*out << "\tPx\tPy\tPz";
-	*out << "\tBx\tBy\tBz";	//Unconditioned B field output
-	if (fields.test(SerialNumberColumn))
+	if (fields.test(MagneticFieldColumn))
+		*out << "\tBx\tBy\tBz";
+	if (fields.test(SourceSerialNumberColumn))
 		*out << "\tSN0";
 	if (fields.test(SourceIdColumn))
 		*out << "\tID0";
@@ -83,7 +84,7 @@ void TextOutput::printHeader() const {
 		*out << "\tX0\tY0\tZ0";
 	if (fields.test(SourceDirectionColumn) && not oneDimensional)
 		*out << "\tP0x\tP0y\tP0z";
-	if (fields.test(SerialNumberColumn))
+	if (fields.test(CreatedSerialNumberColumn))
 		*out << "\tSN1";
 	if (fields.test(CreatedIdColumn))
 		*out << "\tID1";
@@ -97,6 +98,8 @@ void TextOutput::printHeader() const {
 		*out << "\tP1x\tP1y\tP1z";
 	if (fields.test(WeightColumn))
 		*out << "\tW";
+	if (fields.test(PitchangleColumn))
+		*out << "\tmu";
 	if (fields.test(CandidateTagColumn))
 		*out << "\ttag";
 	for(std::vector<Property>::const_iterator iter = properties.begin();
@@ -126,9 +129,12 @@ void TextOutput::printHeader() const {
 			|| fields.test(CreatedDirectionColumn)
 			|| fields.test(SourceDirectionColumn))
 		*out << "# Px/P0x/P1x... Heading (unit vector of momentum)\n";
-	*out << "# Bx/By/Bz... Magnetic field (at current position)\n"; //Unconditioned B field output
+	if (fields.test(MagneticFieldColumn))
+		*out << "# Bx/By/Bz... Magnetic field (at current position)\n"; // custom magnetic field output 
 	if (fields.test(WeightColumn))
 		*out << "# W             Weights" << " \n";
+	if (fields.test(PitchangleColumn))
+		*out << "# mu 	cos(pitchangle) \n";
 	if (fields.test(CandidateTagColumn)) {
 		*out << "# tag           Candidate tag can be given by the source feature (user defined tag) or by the following interaction process \n";
 		*out << "#\tES  \tElasticScattering \n" << "#\tEPP \tElectronPairProduction \n" << "#\tEMPP\tEMPairProduction\n"
@@ -261,6 +267,10 @@ void TextOutput::process(Candidate *c) const {
 	}
 	if (fields.test(WeightColumn)) {
 		p += std::sprintf(buffer + p, "%8.5E\t", c->getWeight());
+	}
+	if (fields.test(PitchangleColumn)) {
+		std::vector<double> muVec = c -> lastPitchAngle;
+		p += std::sprintf(buffer + p, "%8.5E\t", muVec[muVec.size() - 1]);
 	}
 	if (fields.test(CandidateTagColumn)) {
 		p += std::sprintf(buffer + p, "%s\t", c->getTagOrigin().c_str());
