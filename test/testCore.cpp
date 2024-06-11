@@ -23,7 +23,16 @@
 #include <HepPID/ParticleIDMethods.hh>
 #include "gtest/gtest.h"
 
+#include "qd/dd_real.h"
+
 namespace crpropa {
+
+TEST(QD, precision) {
+	dd_real a = 1e-20;
+	dd_real b = 1e20;
+
+	EXPECT_TRUE((a + b) / b - 1 > 0); 
+}
 
 TEST(ParticleState, position) {
 	ParticleState particle;
