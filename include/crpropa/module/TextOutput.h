@@ -25,7 +25,7 @@ protected:
 	std::ofstream outfile;
 	std::string filename;
 	bool storeRandomSeeds;
-	
+	int timeDigits = 5; // number of digits for the time column
 	void printHeader() const;
 
 public:
@@ -71,6 +71,9 @@ public:
 	 */
 	static void load(const std::string &filename, ParticleCollector *collector);
 	std::string getDescription() const;
+
+	void setTimeDigits(int n); 
+	int getTimeDigits() const;
 };
 /** @}*/
 

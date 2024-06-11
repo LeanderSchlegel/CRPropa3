@@ -7,6 +7,8 @@
 
 #include "kiss/string.h"
 
+#include "qd/dd_real.h"
+
 #include <cstdio>
 #include <stdexcept>
 #include <iostream>
@@ -173,9 +175,11 @@ void TextOutput::process(Candidate *c) const {
 	if (fields.test(TrajectoryLengthColumn))
 		p += std::sprintf(buffer + p, "%8.5E\t",
 				c->getTrajectoryLength() / lengthScale);
-	if (fields.test(TimeColumn))
-		p += std::sprintf(buffer + p, "%8.5E\t",
-				c->getTime() / timeScale);
+	if (fields.test(TimeColumn)) {
+		dd_real scaled_time = c -> getTime() / timeScale;
+		p += std::sprintf(buffer + p, "%s\t",
+				scaled_time.to_string(timeDigits).c_str());
+	}
 
 	if (fields.test(RedshiftColumn))
 		p += std::sprintf(buffer + p, "%1.5E\t", c->getRedshift());
@@ -388,6 +392,14 @@ void TextOutput::gzip() {
 #else
 	throw std::runtime_error("CRPropa was built without Zlib compression!");
 #endif
+}
+
+void TextOutput::setTimeDigits(int n) {
+	this->timeDigits = n;
+}
+
+int TextOutput::getTimeDigits() const {
+	return timeDigits;
 }
 
 } // namespace crpropa
