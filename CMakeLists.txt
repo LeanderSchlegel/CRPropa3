@@ -156,6 +156,11 @@ add_subdirectory(libs/sophia)
 list(APPEND CRPROPA_EXTRA_LIBRARIES sophia gfortran)
 list(APPEND CRPROPA_EXTRA_INCLUDES libs/sophia)
 
+# QD (provided) 
+add_subdirectory(libs/qd)
+list(APPEND CRPROPA_EXTRA_LIBRARIES qd)
+list(APPEND CRPROPA_EXTRA_INCLUDES libs/qd/include)
+
 # Galactic magnetic lenses
 option(ENABLE_GALACTICMAGNETICLENS "Galactic Magnetic Lens" ON)
 option(INSTALL_EIGEN "Install provided EIGEN headers" OFF)
