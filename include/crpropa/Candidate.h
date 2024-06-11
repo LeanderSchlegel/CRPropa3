@@ -10,6 +10,7 @@
 #include <map>
 #include <sstream>
 #include <stdint.h>
+#include <qd/qd_real.h> // high precision data type for the time
 
 namespace crpropa {
 /**
@@ -47,7 +48,7 @@ private:
 	double currentStep; /**< Size of the currently performed step in [m] comoving units */
 	double nextStep; /**< Proposed size of the next propagation step in [m] comoving units */
 	std::string tagOrigin; /**< Name of interaction/source process which created this candidate*/
-	double time; /**< Time [s] that has passed in the laboratory frame of reference */
+	dd_real time; /**< Time [s] that has passed in the laboratory frame of reference */
 
 	static uint64_t nextSerialNumber;
 	uint64_t serialNumber;
@@ -111,8 +112,8 @@ public:
 	/**
 	 Sets the time of the candidate.
 	 */
-	void setTime(double t);
-	double getTime() const;
+	void setTime(dd_real t);
+	dd_real getTime() const;
 
 	/**
 	 Make a bid for the next step size: the lowest wins.

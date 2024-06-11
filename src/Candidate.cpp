@@ -115,11 +115,11 @@ std::string Candidate::getTagOrigin () const {
 	return tagOrigin;
 }
 
-void Candidate::setTime(double t) {
+void Candidate::setTime(dd_real t) {
 	time = t;
 }
 
-double Candidate::getTime() const {
+dd_real Candidate::getTime() const {
 	return time;
 }
 
